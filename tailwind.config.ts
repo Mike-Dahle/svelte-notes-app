@@ -29,6 +29,3 @@ plugins: [
 
 
 } satisfies Config;
-
-export default config;
-						
