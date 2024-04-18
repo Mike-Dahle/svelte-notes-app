@@ -2,6 +2,8 @@
 import { Router, Route } from 'svelte-routing';
 
 import Home from './Home/Home.svelte';
+import Editing from './components/Editing.svelte';
+import Viewing from './components/Viewing.svelte';
 </script>
 
 <main>
@@ -10,10 +12,10 @@ import Home from './Home/Home.svelte';
 			<Home />
 		</Route>
 		<Route path='/edit/:id' let:params>
-			<h1>Edit</h1>
+			<Editing id={params.id}/>
 		</Route>
 		<Route path='/view/:id' let:params>
-			<h1>Page</h1>
+			<Viewing id={params.id}/>
 		</Route>
 	</Router>
 </main>

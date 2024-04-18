@@ -2,6 +2,7 @@
 	import '../app.postcss';
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
+	import { navigate, Link } from 'svelte-routing';
 
 	let categoryOpened = false;
 	let noteOpened = false;
@@ -19,17 +20,31 @@
 </script>
 
 <!-- App Shell -->
-<AppShell slotSidebarLeft="bg-surface-500/5 w-56 p-4">
+<AppShell slotSidebarLeft="bg-surface-500/5 w-64 p-4">
 
 	<svelte:fragment slot="sidebarLeft">
 		<!-- Insert the list: -->
-		<nav class="list-nav p-0 w-96">
+		<nav class="list-nav p-0 w-64">
 			<div class="flex grow flex-col gap-y-5 overflow-y-auto border-r px-6">
 
 				<div class="flex h-16 shrink-0 items-center">
 					<div class="animate-pulse variant-soft-primary p-4 rounded-full">
 						<img class="h-8 w-auto" src="post-it.png" alt="Paper icons created by Pixel perfect - Flaticon">
 					</div>
+				</div>
+
+				<div class="flex gap-2 justify-between">
+					<button class="btn btn-sm variant-filled-primary font-bold grow">
+						<span class="material-symbols-outlined text-sm">
+						add
+						</span>
+						Note
+					</button><button class="btn btn-sm variant-filled-primary font-bold">
+						<span class="material-symbols-outlined text-sm">
+						add
+						</span> 
+						Category
+					</button>
 				</div>
 
 				<nav class="flex flex-1 flex-col">
@@ -40,6 +55,7 @@
 						  <!-- Current: "bg-gray-50", Default: "hover:bg-gray-50" -->
 						  <button class="block w-full rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">Homepage</button>
 						</li>
+						<hr>
 						<li>
 						  <div>
 							<button type="button" class="hover:bg-gray-50 flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold  " aria-controls="sub-menu-1" aria-expanded="false" on:click={toggleCategory}>
@@ -50,15 +66,13 @@
 							  Categories
 							</button>
 							<!-- Expandable link section, show/hide based on state. -->
-							<ul class={categoryOpened ? `mt-1 pl-4` : `mt-1 pl-4 hidden`} id="sub-menu-1">
-							  <li>
-								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Personal</button>
-							  </li>
-							  <li>
-								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Journaling</button>
-							  </li>
-							  <li>
-								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Todo</button>
+							<ul class={categoryOpened ? `mt-1 pl-4 w-full` : `mt-1 pl-4 w-full hidden`} id="sub-menu-1">
+							  <li class="flex items-center justify-between">
+								<p class="block rounded-none w-full border-l-2 border-secondary-500 py-2 pr-2 pl-9 text-sm leading-6  ">Personal</p>
+								<div class="flex">
+									<button class="btn btn-icon variant-filled-warning"><span class="material-symbols-outlined">edit</span></button>
+									<button class="btn btn-icon variant-filled-error"><span class="material-symbols-outlined">delete</span></button>
+								</div>
 							  </li>
 							</ul>
 						  </div>
@@ -73,30 +87,23 @@
 							  Notes
 							</button>
 							<!-- Expandable link section, show/hide based on state. -->
-							<ul class={noteOpened ? `mt-1 pl-4` : `mt-1 pl-4 hidden`} id="sub-menu-2">
-							  <li>
-								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Herro</button>
-							  </li>
-							  <li>
-								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Reeeeee</button>
-							  </li>
-							  <li>
-								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Nononono</button>
-							  </li>
-							  <li>
-								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Thank YOu</button>
+							<ul class={noteOpened ? `mt-1 pl-4 w-full` : `mt-1 pl-4 w-full hidden`} id="sub-menu-2">
+							  <li class="flex items-center justify-between">
+								<button class="hover:bg-gray-50 block w-full font-bold border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6"><span class="line-clamp-1">My note is so awesome and cool and stuff.</span></button>
+								<div class="flex">
+									<button class="btn btn-icon rounded-full variant-filled-warning"><span class="material-symbols-outlined">edit</span></button>
+									<button class="btn btn-icon rounded-full variant-filled-error"><span class="material-symbols-outlined">delete</span></button>
+								</div>
 							  </li>
 							</ul>
 						  </div>
 						</li>
+						<hr>
 						<li>
-						  <button class="hover:bg-gray-50 block w-full rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">Delete</button>
-						</li>
-						<li>
-						  <button class="hover:bg-gray-50 block w-full rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">Edit</button>
-						</li>
-						<li>
-						  <button class="hover:bg-gray-50 block w-full rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">SOmething</button>
+						  <select class="select variant-form-material my-2" name="" id="">
+							<option value="" disabled selected>Filter By:</option>
+							<option value="1">Personal</option>
+						  </select>
 						</li>
 					  </ul>
 					</li>
