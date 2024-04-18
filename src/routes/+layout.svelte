@@ -38,7 +38,7 @@
 					  <ul role="list" class="-mx-2 space-y-1">
 						<li>
 						  <!-- Current: "bg-gray-50", Default: "hover:bg-gray-50" -->
-						  <a href="#" class="block rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">Homepage</a>
+						  <button class="block w-full rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">Homepage</button>
 						</li>
 						<li>
 						  <div>
@@ -52,13 +52,13 @@
 							<!-- Expandable link section, show/hide based on state. -->
 							<ul class={categoryOpened ? `mt-1 pl-4` : `mt-1 pl-4 hidden`} id="sub-menu-1">
 							  <li>
-								<a href="#" class="hover:bg-gray-50 block border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Personal</a>
+								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Personal</button>
 							  </li>
 							  <li>
-								<a href="#" class="hover:bg-gray-50 block border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Journaling</a>
+								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Journaling</button>
 							  </li>
 							  <li>
-								<a href="#" class="hover:bg-gray-50 block border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Todo</a>
+								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Todo</button>
 							  </li>
 							</ul>
 						  </div>
@@ -75,28 +75,28 @@
 							<!-- Expandable link section, show/hide based on state. -->
 							<ul class={noteOpened ? `mt-1 pl-4` : `mt-1 pl-4 hidden`} id="sub-menu-2">
 							  <li>
-								<a href="#" class="hover:bg-gray-50 block border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Herro</a>
+								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Herro</button>
 							  </li>
 							  <li>
-								<a href="#" class="hover:bg-gray-50 block border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Reeeeee</a>
+								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Reeeeee</button>
 							  </li>
 							  <li>
-								<a href="#" class="hover:bg-gray-50 block border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Nononono</a>
+								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Nononono</button>
 							  </li>
 							  <li>
-								<a href="#" class="hover:bg-gray-50 block border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Thank YOu</a>
+								<button class="hover:bg-gray-50 block w-full border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6  ">Thank YOu</button>
 							  </li>
 							</ul>
 						  </div>
 						</li>
 						<li>
-						  <a href="#" class="hover:bg-gray-50 block rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">Delete</a>
+						  <button class="hover:bg-gray-50 block w-full rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">Delete</button>
 						</li>
 						<li>
-						  <a href="#" class="hover:bg-gray-50 block rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">Edit</a>
+						  <button class="hover:bg-gray-50 block w-full rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">Edit</button>
 						</li>
 						<li>
-						  <a href="#" class="hover:bg-gray-50 block rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">SOmething</a>
+						  <button class="hover:bg-gray-50 block w-full rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">SOmething</button>
 						</li>
 					  </ul>
 					</li>
