@@ -1,43 +1,45 @@
-import { writable } from "svelte/store"
+import { writable } from 'svelte/store';
 
 interface Note {
-    id: number
-    title: string
-    contents: string
-    date: string
-    category: string
-    color: string
+    id: number;
+    title: string;
+    contents: string;
+    date: string;
+    category: string;
+    colorCategory: string;
 }
 
-export interface Notes {
-    contents: Note[]
+const localStorageAvailable = typeof localStorage !== 'undefined';
+
+const initialNotes: Note[] = localStorageAvailable ? JSON.parse(localStorage.getItem('notes') || '[]') : [];
+export const notes = writable(initialNotes);
+
+function saveNotes(notesData: Note[]) {
+    if (localStorageAvailable) {
+        localStorage.setItem('notes', JSON.stringify(notesData));
+    }
 }
 
-export const DEFAULT_NOTE = {
-    contents: [] as Note[],
+export function addNote(newNote: Note) {
+    notes.update(notesData => {
+        const updatedNotes = [...notesData, newNote];
+        saveNotes(updatedNotes);
+        return updatedNotes;
+    });
 }
 
-const notes = writable<Notes>(DEFAULT_NOTE, (set) => {
-    const savedNotes = (() => {
-        const localStorageNotes = localStorage.getItem("notes");
+export function updateNote(updatedNote: Note) {
+    notes.update(notesData => {
+        const updatedNotes = notesData.map(note => (note.id === updatedNote.id ? updatedNote : note));
+        saveNotes(updatedNotes);
+        return updatedNotes;
+    });
+}
 
-        if (!localStorageNotes) {
-            return DEFAULT_NOTE;
-        }
-        try {
-            return JSON.parse(localStorageNotes)
-        } catch {
-            console.log("Error parsing notes from local storage");
-            localStorage.setItem("notes", JSON.stringify(DEFAULT_NOTE));
-            return DEFAULT_NOTE;
-        }
-    })();
-    
-    set(savedNotes)
-})
-
-notes.subscribe((value) => {
-    localStorage.setItem("notes", JSON.stringify(value));
-})
-
-export default notes;
+export function deleteNote(noteId: number) {
+    notes.update(notesData => {
+        const updatedNotes = notesData.filter(note => note.id !== noteId);
+        saveNotes(updatedNotes);
+        return updatedNotes;
+    });
+}

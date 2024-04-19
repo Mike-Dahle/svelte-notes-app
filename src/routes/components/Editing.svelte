@@ -1,0 +1,93 @@
+<script lang='ts'>
+    import { onDestroy, onMount } from 'svelte';
+    import { navigate } from 'svelte-routing';
+    import { notes, updateNote } from '../../stores/notes';
+    
+    // Define type for note
+    interface Note {
+        id: number;
+        title: string;
+        contents: string;
+        category: string;
+        colorCategory: string;
+    }
+
+    export let id: string;
+
+    let note: Note | null = null;
+    let title = '';
+    let contents = '';
+    let category = '';
+    let colorCategory = '';
+    
+    let unsubscribeNotes: () => void;
+    onMount(() => {
+        unsubscribeNotes = notes.subscribe(notesData => {
+            note = notesData.find(n => n.id === +id);
+            if (note) {
+                title = note.title;
+                contents = note.contents;
+                category = note.category;
+                colorCategory = note.colorCategory;
+            }
+        });
+    });
+
+    onDestroy(() => {
+        unsubscribeNotes();
+    });
+    
+    function save() {
+        if (note) {
+            note = { ...note, title, contents, category, colorCategory };
+            updateNote(note);
+            console.log('Note saved:', note);
+        }
+    }
+    
+    function goBack() {
+        navigate('/');
+    }
+    
+    function preview() {
+        navigate(`/view/${id}`);
+    }
+
+</script>
+
+{#if note}
+<div class="flex flex-col p-6 w-3/4 max-w-[1240px] mx-auto">
+    <h1 class="h1">
+        Editing {title}
+      </h1>
+    
+      <form on:submit|preventDefault={save} class="form variant-outline-surface shadow-md p-4 flex flex-col gap-4 mt-6">
+        <section>
+            <label for="name"> Title: 
+                <input
+                    class="input variant-form-material"
+                    id="name"
+                    type="text"
+                    bind:value={title}
+                />
+            </label>
+        </section>
+        <section>
+            <label for="content">
+            Content:
+                <textarea
+                    class="textarea variant-form-material"
+                    id="content"
+                    rows="10"
+                    bind:value={contents}
+                />
+            </label>
+        </section>
+        <div class="w-full flex items-center justify-end">
+            <button class="btn variant-filled" type="submit">
+              Save Note
+            </button>
+        </div>
+      </form>
+</div>
+{/if}

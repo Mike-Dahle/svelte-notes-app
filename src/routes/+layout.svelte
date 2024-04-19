@@ -2,7 +2,8 @@
 	import '../app.postcss';
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
-	import { navigate, Link } from 'svelte-routing';
+	import { navigate } from 'svelte-routing';
+	import { addNote } from '../stores/notes';
 
 	let categoryOpened = false;
 	let noteOpened = false;
@@ -15,7 +16,18 @@
 		noteOpened = !noteOpened;
 	}
 
-
+	function createNote() {
+		const newNote = {
+			id: Date.now(),
+			title: 'New Note',
+			contents: '',
+			date: new Date().toISOString(),
+			category: '',
+			colorCategory: ''	
+		};
+		addNote(newNote);
+		navigate(`/edit/${newNote.id}`);
+	}
 
 </script>
 
@@ -23,7 +35,6 @@
 <AppShell slotSidebarLeft="bg-surface-500/5 w-64 p-4">
 
 	<svelte:fragment slot="sidebarLeft">
-		<!-- Insert the list: -->
 		<nav class="list-nav p-0 w-64">
 			<div class="flex grow flex-col gap-y-5 overflow-y-auto border-r px-6">
 
@@ -34,7 +45,7 @@
 				</div>
 
 				<div class="flex gap-2 justify-between">
-					<button class="btn btn-sm variant-filled-primary font-bold grow">
+					<button class="btn btn-sm variant-filled-primary font-bold grow" on:click={createNote}>
 						<span class="material-symbols-outlined text-sm">
 						add
 						</span>
@@ -52,20 +63,17 @@
 					<li>
 					  <ul role="list" class="-mx-2 space-y-1">
 						<li>
-						  <!-- Current: "bg-gray-50", Default: "hover:bg-gray-50" -->
-						  <button class="block w-full rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold  ">Homepage</button>
+						  <button class="block w-full rounded-md py-2 pr-2 pl-10 text-sm leading-6 font-semibold" on:click={() => navigate('/')}>Homepage</button>
 						</li>
 						<hr>
 						<li>
 						  <div>
 							<button type="button" class="hover:bg-gray-50 flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold  " aria-controls="sub-menu-1" aria-expanded="false" on:click={toggleCategory}>
-							  <!-- Expanded: "rotate-90 text-gray-500", Collapsed: "text-gray-400" -->
 							  <svg class={categoryOpened ? `rotate-90 text-gray-500 h-5 w-5 shrink-0` : `text-gray-400 h-5 w-5 shrink-0`} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
 								<path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
 							  </svg>
 							  Categories
 							</button>
-							<!-- Expandable link section, show/hide based on state. -->
 							<ul class={categoryOpened ? `mt-1 pl-4 w-full` : `mt-1 pl-4 w-full hidden`} id="sub-menu-1">
 							  <li class="flex items-center justify-between">
 								<p class="block rounded-none w-full border-l-2 border-secondary-500 py-2 pr-2 pl-9 text-sm leading-6  ">Personal</p>
@@ -80,13 +88,11 @@
 						<li>
 						  <div>
 							<button type="button" class="hover:bg-gray-50 flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold  " aria-controls="sub-menu-2" aria-expanded="false" on:click={toggleNote}>
-							  <!-- Expanded: "rotate-90 text-gray-500", Collapsed: "text-gray-400" -->
 							  <svg class={noteOpened ? `rotate-90 text-gray-500 h-5 w-5 shrink-0` : `text-gray-400 h-5 w-5 shrink-0`} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
 								<path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
 							  </svg>
 							  Notes
 							</button>
-							<!-- Expandable link section, show/hide based on state. -->
 							<ul class={noteOpened ? `mt-1 pl-4 w-full` : `mt-1 pl-4 w-full hidden`} id="sub-menu-2">
 							  <li class="flex items-center justify-between">
 								<button class="hover:bg-gray-50 block w-full font-bold border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6"><span class="line-clamp-1">My note is so awesome and cool and stuff.</span></button>
