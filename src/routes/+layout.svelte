@@ -3,7 +3,31 @@
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import { navigate } from 'svelte-routing';
-	import { addNote } from '../stores/notes';
+	import { addNote, updateNote } from '../stores/notes';
+	import { Modal, getModalStore } from '@skeletonlabs/skeleton';
+	import type { ModalSettings, ModalComponent, ModalStore } from '@skeletonlabs/skeleton';
+	import { initializeStores } from '@skeletonlabs/skeleton';
+
+	initializeStores();
+			
+	const modalStore = getModalStore();
+
+
+	const addCategory: ModalSettings = {
+		type: 'prompt',
+		// Data
+		title: 'Add Category',
+		body: 'Enter the name of the category you would like to add.',
+		// Populates the input value and attributes
+		value: 'Homework',
+		valueAttr: { type: 'text', minlength: 3, maxlength: 10, required: true },
+		// Returns the updated response value
+		response: (r: string) => {
+			console.log(r);
+		},
+	};
+
+						
 
 	let categoryOpened = false;
 	let noteOpened = false;
@@ -31,6 +55,7 @@
 
 </script>
 
+<Modal />
 <!-- App Shell -->
 <AppShell slotSidebarLeft="bg-surface-500/5 w-64 p-4">
 
@@ -50,7 +75,7 @@
 						add
 						</span>
 						Note
-					</button><button class="btn btn-sm variant-filled-primary font-bold">
+					</button><button class="btn btn-sm variant-filled-primary font-bold" on:click={() => modalStore.trigger(addCategory)}>
 						<span class="material-symbols-outlined text-sm">
 						add
 						</span> 

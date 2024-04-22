@@ -9,6 +9,21 @@ interface Note {
     colorCategory: string;
 }
 
+interface Category {
+    text: [
+        { 
+            value: string; 
+            id: string 
+        }
+    ];
+    color: [
+        { 
+            value: string; 
+            id: string 
+        }
+    ];
+}
+
 const localStorageAvailable = typeof localStorage !== 'undefined';
 
 const initialNotes: Note[] = localStorageAvailable ? JSON.parse(localStorage.getItem('notes') || '[]') : [];
