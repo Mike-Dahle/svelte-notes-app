@@ -3,14 +3,15 @@
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import { navigate } from 'svelte-routing';
-	import { addNote, updateNote } from '../stores/notes';
-	import { Modal, getModalStore } from '@skeletonlabs/skeleton';
-	import type { ModalSettings, ModalComponent, ModalStore } from '@skeletonlabs/skeleton';
+	import { addNote, updateNote, notes, deleteNote } from '../stores/notes';
+	import { Modal, getModalStore, Toast, getToastStore } from '@skeletonlabs/skeleton';
+	import type { ModalSettings, ModalComponent, ModalStore, ToastSettings, ToastStore } from '@skeletonlabs/skeleton';
 	import { initializeStores } from '@skeletonlabs/skeleton';
 
 	initializeStores();
 			
 	const modalStore = getModalStore();
+	const toastStore = getToastStore();
 
 
 	const addCategory: ModalSettings = {
@@ -46,15 +47,38 @@
 			title: 'New Note',
 			contents: '',
 			date: new Date().toISOString(),
-			category: '',
-			colorCategory: ''	
+			category: 'Uncategorized',
+			colorCategory: '#ffffff'	
 		};
 		addNote(newNote);
 		navigate(`/edit/${newNote.id}`);
 	}
 
+	function handleDelete(noteId: number) {
+			const confirmDelete: ModalSettings = {
+			type: 'confirm',
+			// Data
+			title: 'Delete Note',
+			body: 'Are you sure you wish to proceed?',
+			// TRUE if confirm pressed, FALSE if cancel pressed
+			response: (r: boolean) => {
+				if (r) {
+					deleteNote(noteId);
+					const noteDeleted: ToastSettings = {
+						message: 'Note deleted successfully.',
+						timeout: 3000,
+						background: 'bg-success-500',
+					};
+					toastStore.trigger(noteDeleted);
+				}
+			},
+		};
+		modalStore.trigger(confirmDelete);
+	}
+
 </script>
 
+<Toast />
 <Modal />
 <!-- App Shell -->
 <AppShell slotSidebarLeft="bg-surface-500/5 w-64 p-4">
@@ -65,7 +89,7 @@
 
 				<div class="flex h-16 shrink-0 items-center">
 					<div class="animate-pulse variant-soft-primary p-4 rounded-full">
-						<img class="h-8 w-auto" src="post-it.png" alt="Paper icons created by Pixel perfect - Flaticon">
+						<img class="h-8 w-auto" src="/post-it.png" alt="Paper icons created by Pixel perfect - Flaticon">
 					</div>
 				</div>
 
@@ -119,13 +143,20 @@
 							  Notes
 							</button>
 							<ul class={noteOpened ? `mt-1 pl-4 w-full` : `mt-1 pl-4 w-full hidden`} id="sub-menu-2">
-							  <li class="flex items-center justify-between">
-								<button class="hover:bg-gray-50 block w-full font-bold border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6"><span class="line-clamp-1">My note is so awesome and cool and stuff.</span></button>
-								<div class="flex">
-									<button class="btn btn-icon rounded-full variant-filled-warning"><span class="material-symbols-outlined">edit</span></button>
-									<button class="btn btn-icon rounded-full variant-filled-error"><span class="material-symbols-outlined">delete</span></button>
-								</div>
-							  </li>
+								{#each $notes as note}
+								<li class="flex items-center justify-between">
+									<button class="hover:bg-gray-50 block w-full font-bold border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6"><span class="line-clamp-1">{note.title}</span></button>
+									<div class="flex">
+										<button class="btn btn-icon rounded-full variant-filled-warning" on:click={() => navigate(`/edit/${note.id}`)}><span class="material-symbols-outlined">edit</span></button>
+										<button class="btn btn-icon rounded-full variant-filled-error" on:click={() => handleDelete(note.id)}><span class="material-symbols-outlined">delete</span></button>
+									</div>
+								  </li>
+								{/each}
+								{#if $notes.length === 0}
+									<li>
+										<button class="hover:bg-gray-50 block w-full font-light border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6" disabled><span class="line-clamp-1">No Notes Yet</span></button>
+									</li>
+								{/if}
 							</ul>
 						  </div>
 						</li>

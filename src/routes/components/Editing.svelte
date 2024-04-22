@@ -1,16 +1,8 @@
 <script lang='ts'>
-    import { onDestroy, onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import { navigate } from 'svelte-routing';
-    import { notes, updateNote } from '../../stores/notes';
-    
-    // Define type for note
-    interface Note {
-        id: number;
-        title: string;
-        contents: string;
-        category: string;
-        colorCategory: string;
-    }
+    import { findNoteById, updateNote} from '../../stores/notes';
+    import type { Note } from '../../stores/notes';
 
     export let id: string;
 
@@ -19,51 +11,48 @@
     let contents = '';
     let category = '';
     let colorCategory = '';
-    
-    let unsubscribeNotes: () => void;
-    onMount(() => {
-        unsubscribeNotes = notes.subscribe(notesData => {
-            note = notesData.find(n => n.id === +id);
-            if (note) {
-                title = note.title;
-                contents = note.contents;
-                category = note.category;
-                colorCategory = note.colorCategory;
-            }
-        });
+
+    const unsubscribe = findNoteById(+id).subscribe(foundNote => {
+        note = foundNote;
+        if (note !== null) {
+            title = note.title;
+            contents = note.contents;
+            category = note.category;
+            colorCategory = note.colorCategory;
+        }
     });
 
     onDestroy(() => {
-        unsubscribeNotes();
+        unsubscribe();
     });
-    
-    function save() {
-        if (note) {
-            note = { ...note, title, contents, category, colorCategory };
-            updateNote(note);
-            console.log('Note saved:', note);
-        }
-    }
-    
+
     function goBack() {
         navigate('/');
     }
-    
-    function preview() {
-        navigate(`/view/${id}`);
-    }
 
+    function save() {
+        if (note !== null) {
+            updateNote({
+                ...note,
+                title,
+                contents,
+                category,
+                colorCategory
+            });
+        }
+        navigate('/');
+    }
 </script>
 
-{#if note}
+{#if note !== null}
 <div class="flex flex-col p-6 w-3/4 max-w-[1240px] mx-auto">
     <h1 class="h1">
         Editing {title}
-      </h1>
-    
-      <form on:submit|preventDefault={save} class="form variant-outline-surface shadow-md p-4 flex flex-col gap-4 mt-6">
+    </h1>
+
+    <form on:submit|preventDefault={save} class="form variant-outline-surface shadow-md p-4 flex flex-col gap-4 mt-6">
         <section>
-            <label for="name"> Title: 
+            <label for="name"> Title:
                 <input
                     class="input variant-form-material"
                     id="name"
@@ -74,7 +63,7 @@
         </section>
         <section>
             <label for="content">
-            Content:
+                Content:
                 <textarea
                     class="textarea variant-form-material"
                     id="content"
@@ -85,9 +74,16 @@
         </section>
         <div class="w-full flex items-center justify-end">
             <button class="btn variant-filled" type="submit">
-              Save Note
+                Save Note
             </button>
         </div>
-      </form>
+    </form>
 </div>
+{:else}
+    <div class="flex flex-col items-center justify-center relative">
+        <div class="card shadow-md p-4 mt-16 flex flex-col items-center gap-2 z-10">
+            <h1 class="h1">No Notes 🥲</h1>
+            <p>To create a note click the <b>"+ Note"</b> button.</p>
+        </div>
+    </div>
 {/if}
