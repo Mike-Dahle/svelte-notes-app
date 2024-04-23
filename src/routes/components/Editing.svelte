@@ -9,7 +9,7 @@
     let note: Note | null = null;
     let title = '';
     let contents = '';
-    let category = '';
+    let category: number
     let colorCategory = '';
 
     const unsubscribe = findNoteById(+id).subscribe(foundNote => {

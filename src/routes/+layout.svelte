@@ -3,10 +3,11 @@
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import { navigate } from 'svelte-routing';
-	import { addNote, updateNote, notes, deleteNote } from '../stores/notes';
+	import { addNote, categories, notes, deleteNote, addCategory, deleteCategory, updateCategory } from '../stores/notes';
 	import { Modal, getModalStore, Toast, getToastStore } from '@skeletonlabs/skeleton';
 	import type { ModalSettings, ModalComponent, ModalStore, ToastSettings, ToastStore } from '@skeletonlabs/skeleton';
 	import { initializeStores } from '@skeletonlabs/skeleton';
+	import { get } from 'svelte/store';
 
 	initializeStores();
 			
@@ -14,7 +15,7 @@
 	const toastStore = getToastStore();
 
 
-	const addCategory: ModalSettings = {
+	const addCategoryModal: ModalSettings = {
 		type: 'prompt',
 		// Data
 		title: 'Add Category',
@@ -24,11 +25,44 @@
 		valueAttr: { type: 'text', minlength: 3, maxlength: 10, required: true },
 		// Returns the updated response value
 		response: (r: string) => {
-			console.log(r);
+			const newCategory = {
+				id: get(categories).length + 1,
+				name: r,
+			};
+			categories.update((c) => [...c, newCategory]);
+			const categoryAdded: ToastSettings = {
+				message: 'Category added successfully.',
+				timeout: 3000,
+				background: 'bg-success-500',
+			};
+			toastStore.trigger(categoryAdded);
+			console.log(categories);
 		},
 	};
 
-						
+	function handleEditCategory(catId: number) {
+		const editCategoryModal: ModalSettings = {
+			type: 'prompt',
+			title: 'Edit Category',
+			body: 'Enter the new name of the category.',
+			value: get(categories).find((c) => c.id === catId)?.name || '',
+			valueAttr: { type: 'text', minlength: 3, maxlength: 10, required: true },
+			response: (r: string) => {
+				const updatedCategory = {
+					id: catId,
+					name: r,
+				};
+				updateCategory(updatedCategory);
+				const categoryUpdated: ToastSettings = {
+					message: 'Category updated successfully.',
+					timeout: 3000,
+					background: 'bg-success-500',
+				};
+				toastStore.trigger(categoryUpdated);
+			},
+		};
+		modalStore.trigger(editCategoryModal);
+	}					
 
 	let categoryOpened = false;
 	let noteOpened = false;
@@ -47,7 +81,7 @@
 			title: 'New Note',
 			contents: '',
 			date: new Date().toISOString(),
-			category: 'Uncategorized',
+			category: 1,
 			colorCategory: '#ffffff'	
 		};
 		addNote(newNote);
@@ -57,10 +91,8 @@
 	function handleDelete(noteId: number) {
 			const confirmDelete: ModalSettings = {
 			type: 'confirm',
-			// Data
 			title: 'Delete Note',
 			body: 'Are you sure you wish to proceed?',
-			// TRUE if confirm pressed, FALSE if cancel pressed
 			response: (r: boolean) => {
 				if (r) {
 					deleteNote(noteId);
@@ -99,7 +131,7 @@
 						add
 						</span>
 						Note
-					</button><button class="btn btn-sm variant-filled-primary font-bold" on:click={() => modalStore.trigger(addCategory)}>
+					</button><button class="btn btn-sm variant-filled-primary font-bold" on:click={() => modalStore.trigger(addCategoryModal)}>
 						<span class="material-symbols-outlined text-sm">
 						add
 						</span> 
@@ -124,13 +156,20 @@
 							  Categories
 							</button>
 							<ul class={categoryOpened ? `mt-1 pl-4 w-full` : `mt-1 pl-4 w-full hidden`} id="sub-menu-1">
-							  <li class="flex items-center justify-between">
-								<p class="block rounded-none w-full border-l-2 border-secondary-500 py-2 pr-2 pl-9 text-sm leading-6  ">Personal</p>
-								<div class="flex">
-									<button class="btn btn-icon variant-filled-warning"><span class="material-symbols-outlined">edit</span></button>
-									<button class="btn btn-icon variant-filled-error"><span class="material-symbols-outlined">delete</span></button>
-								</div>
-							  </li>
+								{#each $categories as category}
+								<li class="flex items-center justify-between" id={`${category.id}`}>
+									<p class="block rounded-none w-full border-l-2 border-secondary-500 py-2 pr-2 pl-9 text-sm leading-6  ">{category.name}</p>
+									<div class="flex">
+										<button class="btn btn-icon variant-filled-warning" on:click={() => handleEditCategory(category.id)}><span class="material-symbols-outlined">edit</span></button>
+										<button class="btn btn-icon variant-filled-error" on:click={() => deleteCategory(category.id)}><span class="material-symbols-outlined">delete</span></button>
+									</div>
+								  </li>
+								{/each}
+								{#if $categories.length === 0}
+									<li>
+										<button class="block rounded-none w-full border-l-2 border-secondary-500 py-2 pr-2 pl-9 text-sm leading-6" disabled>No Categories Yet</button>
+									</li>
+								{/if}
 							</ul>
 						  </div>
 						</li>

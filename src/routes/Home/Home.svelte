@@ -8,7 +8,7 @@
 			title: 'New Note',
 			contents: '',
 			date: new Date().toISOString(),
-			category: '',
+			category: 1,
 			colorCategory: ''	
 		};
 		addNote(newNote);
