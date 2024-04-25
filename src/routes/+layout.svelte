@@ -158,7 +158,7 @@
 							<ul class={categoryOpened ? `mt-1 pl-4 w-full` : `mt-1 pl-4 w-full hidden`} id="sub-menu-1">
 								{#each $categories as category}
 								<li class="flex items-center justify-between" id={`${category.id}`}>
-									<p class="block rounded-none w-full border-l-2 border-secondary-500 py-2 pr-2 pl-9 text-sm leading-6  ">{category.name}</p>
+									<p class="block rounded-none w-full border-l-2 border-secondary-500 py-2 pr-2 pl-9 text-sm leading-6">{category.name}</p>
 									<div class="flex">
 										<button class="btn btn-icon variant-filled-warning" on:click={() => handleEditCategory(category.id)}><span class="material-symbols-outlined">edit</span></button>
 										<button class="btn btn-icon variant-filled-error" on:click={() => deleteCategory(category.id)}><span class="material-symbols-outlined">delete</span></button>
@@ -184,7 +184,7 @@
 							<ul class={noteOpened ? `mt-1 pl-4 w-full` : `mt-1 pl-4 w-full hidden`} id="sub-menu-2">
 								{#each $notes as note}
 								<li class="flex items-center justify-between">
-									<button class="hover:bg-gray-50 block w-full font-bold border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6"><span class="line-clamp-1">{note.title}</span></button>
+									<button class={`hover:bg-gray-50 block w-full font-bold border-l-2 border-[${note.colorCategory}] rounded-md py-2 pr-2 pl-9 text-sm leading-6`}><span class="line-clamp-1">{note.title}</span></button>
 									<div class="flex">
 										<button class="btn btn-icon rounded-full variant-filled-warning" on:click={() => navigate(`/edit/${note.id}`)}><span class="material-symbols-outlined">edit</span></button>
 										<button class="btn btn-icon rounded-full variant-filled-error" on:click={() => handleDelete(note.id)}><span class="material-symbols-outlined">delete</span></button>
