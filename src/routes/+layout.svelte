@@ -81,7 +81,7 @@
 			title: 'New Note',
 			contents: '',
 			date: new Date().toISOString(),
-			category: 1,
+			category: 0,
 			colorCategory: '#ffffff'	
 		};
 		addNote(newNote);
@@ -113,11 +113,11 @@
 <Toast />
 <Modal />
 <!-- App Shell -->
-<AppShell slotSidebarLeft="bg-surface-500/5 w-64 p-4">
+<AppShell slotSidebarLeft="bg-surface-500/5 shadow-md w-80 p-4">
 
 	<svelte:fragment slot="sidebarLeft">
-		<nav class="list-nav p-0 w-64">
-			<div class="flex grow flex-col gap-y-5 overflow-y-auto border-r px-6">
+		<nav class="list-nav p-0 w-full">
+			<div class="flex grow flex-col gap-y-5 overflow-y-auto px-6">
 
 				<div class="flex h-16 shrink-0 items-center">
 					<div class="animate-pulse variant-soft-primary p-4 rounded-full">
@@ -181,10 +181,11 @@
 							  </svg>
 							  Notes
 							</button>
-							<ul class={noteOpened ? `mt-1 pl-4 w-full` : `mt-1 pl-4 w-full hidden`} id="sub-menu-2">
+							<ul class={noteOpened ? `mt-1 w-full` : `mt-1 w-full hidden`} id="sub-menu-2">
 								{#each $notes as note}
-								<li class="flex items-center justify-between">
-									<button class={`hover:bg-gray-50 block w-full font-bold border-l-2 border-[${note.colorCategory}] rounded-md py-2 pr-2 pl-9 text-sm leading-6`}><span class="line-clamp-1">{note.title}</span></button>
+								<li class="flex items-center justify-between hover:cursor-pointer">
+									<input class="input p-0 rounded-full" name="color" type="color" bind:value={note.colorCategory} />
+									<span class="line-clamp-1">{note.title}</span>
 									<div class="flex">
 										<button class="btn btn-icon rounded-full variant-filled-warning" on:click={() => navigate(`/edit/${note.id}`)}><span class="material-symbols-outlined">edit</span></button>
 										<button class="btn btn-icon rounded-full variant-filled-error" on:click={() => handleDelete(note.id)}><span class="material-symbols-outlined">delete</span></button>
@@ -193,7 +194,7 @@
 								{/each}
 								{#if $notes.length === 0}
 									<li>
-										<button class="hover:bg-gray-50 block w-full font-light border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-9 text-sm leading-6" disabled><span class="line-clamp-1">No Notes Yet</span></button>
+										<button class="hover:bg-gray-50 block w-full font-light border-l-2 border-primary-500 rounded-md py-2 pr-2 pl-2 text-sm leading-6" disabled><span class="line-clamp-1">No Notes Yet</span></button>
 									</li>
 								{/if}
 							</ul>
@@ -201,10 +202,20 @@
 						</li>
 						<hr>
 						<li>
-						  <select class="select variant-form-material my-2" name="" id="">
-							<option value="" disabled selected>Filter By:</option>
-							<option value="1">Personal</option>
-						  </select>
+							<div class="flex gap-2">
+								<select class="select variant-form-material my-2" name="" id="">
+									<option value="" disabled selected>Filter Category:</option>
+									{#each $categories as cat}
+										<option value={cat.id}>{cat.name}</option>
+									{/each}
+								</select>
+								<select class="select variant-form-material my-2" name="" id="">
+									<option value="" disabled selected>Filter Tag:</option>
+									{#each $categories as cat}
+										<option value={cat.id}>{cat.name}</option>
+									{/each}
+								</select>
+							</div>
 						</li>
 					  </ul>
 					</li>

@@ -49,6 +49,8 @@
             note.colorCategory = '#ffffff';
         }
     }
+
+    $: currentCat = note !== null ? $categories.find(cat => cat.id === note?.category)?.name : '';
 </script>
 
 {#if note !== null}
@@ -80,12 +82,13 @@
                 </span>
             </button>
             <label for="category"> Category:
-                <select class="input" name="category" id="category">
+                <select class="input" name="category" id="category" bind:value={category}>
+                    <option value={note.category} selected disabled>{currentCat}</option>
                     {#each $categories as cat}
-                        <option value={cat.id} selected={category === cat.id}>{cat.name}</option>
+                        <option value={cat.id}>{cat.name}</option>
                     {/each}
                 </select>
-            </label>
+            </label>            
         </section>
         <section>
             <label for="content">

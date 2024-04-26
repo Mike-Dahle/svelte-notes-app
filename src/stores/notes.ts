@@ -18,6 +18,7 @@ const initialNotes: Note[] = [];
 export const notes = writable(initialNotes);
 
 const initialCategories: Category[] = [
+    { id: 0, name: 'Uncategorized'},
     { id: 1, name: 'Personal' },
     { id: 2, name: 'Work' },
     { id: 3, name: 'Ideas' },
