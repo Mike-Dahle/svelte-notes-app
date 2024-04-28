@@ -1,8 +1,10 @@
 <script lang='ts'>
     import { onMount, onDestroy } from 'svelte';
     import { navigate } from 'svelte-routing';
-    import { findNoteById, updateNote, categories} from '../../stores/notes';
+    import { findNoteById, updateNote, categories, tags, findTagById, deleteTag, addTag } from '../../stores/notes';
     import type { Note } from '../../stores/notes';
+    import { marked } from 'marked';
+	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
 
     export let id: string;
 
@@ -10,7 +12,7 @@
     let title = '';
     let contents = '';
     let category: number
-    let colorCategory = '';
+    let colorCategory: number
 
     const unsubscribe = findNoteById(+id).subscribe(foundNote => {
         note = foundNote;
@@ -32,6 +34,10 @@
 
     function save() {
         if (note !== null) {
+            // Convert contents to Markdown before saving
+            contents = marked(contents);
+            
+            // Update the note object with the new title, contents, category, and colorCategory
             updateNote({
                 ...note,
                 title,
@@ -41,15 +47,21 @@
             });
         }
         navigate('/');
-        console.log(note);
+    }
+
+    let tagsVisible = false;
+
+    const showTags = () => {
+        tagsVisible = !tagsVisible;
     }
 
     function handleReset() {
-        if (note !== null) {
-            note.colorCategory = '#ffffff';
-        }
+        /* if (note !== null) {
+            colorCategory = '#ffffff';
+        } */
+        console.log(note);
     }
-
+    $: currentTag = note !== null ? $tags.find(tag => tag.id === note?.colorCategory)?.color : '';
     $: currentCat = note !== null ? $categories.find(cat => cat.id === note?.category)?.name : '';
 </script>
 
@@ -69,18 +81,28 @@
                     bind:value={title}
                 />
             </label>
-            <label for="color">
+            <label for="tags" class="pt-4">
                 Tag:
-                <div class="grid grid-cols-[auto_1fr] gap-2">
-                    <input class="input" name="color" type="color" bind:value={colorCategory} />
-                    <input class="input variant-form-material" name="color" type="text" bind:value={colorCategory} readonly tabindex="-1" />
+                <div id="tags" class="p-2 relative">
+                    <button class="btn btn-icon btn-icon-sm variant-filled" style="background-color: {currentTag}" type="button" on:click={showTags}></button>
+                        <ul class={`absolute top-15 left-0 rounded-md variant-filled-tertiary p-2 `}> <!-- ${tagsVisible ? 'block' : 'hidden'} -->
+                            
+                            {#each $tags as tag}
+                                <li class="w-full flex items-center justify-center gap-4 mb-2">
+                                    <input class="input" type="color" bind:value={tag.color} />
+                                    <button><span class="material-symbols-outlined hover:text-green-400">check_circle</span></button>
+                                    <button on:click|stopPropagation={() => deleteTag(tag.id)}><span class="material-symbols-outlined hover:text-red-400">delete</span></button>
+                                </li>
+                            {/each}
+                            <li class="w-full flex items-center justify-center">
+                                <button class="btn btn-icon btn-icon-sm variant-filled" type="button" on:click|stopPropagation={() => addTag}>
+                                    <span class="material-symbols-outlined">add</span>
+                                </button>
+                            </li>
+                        </ul>
+                    
                 </div>
             </label>
-            <button class="flex items-center justify-center pt-6" on:click={handleReset}>
-                <span class="material-symbols-outlined">
-                    restart_alt
-                </span>
-            </button>
             <label for="category"> Category:
                 <select class="input" name="category" id="category" bind:value={category}>
                     <option value={note.category} selected disabled>{currentCat}</option>
@@ -88,7 +110,7 @@
                         <option value={cat.id}>{cat.name}</option>
                     {/each}
                 </select>
-            </label>            
+            </label>
         </section>
         <section>
             <label for="content">

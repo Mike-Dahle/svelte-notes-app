@@ -3,7 +3,7 @@
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import { navigate } from 'svelte-routing';
-	import { addNote, categories, notes, deleteNote, addCategory, deleteCategory, updateCategory } from '../stores/notes';
+	import { addNote, categories, notes, deleteNote, addCategory, deleteCategory, updateCategory, findTagById } from '../stores/notes';
 	import { Modal, getModalStore, Toast, getToastStore } from '@skeletonlabs/skeleton';
 	import type { ModalSettings, ModalComponent, ModalStore, ToastSettings, ToastStore } from '@skeletonlabs/skeleton';
 	import { initializeStores } from '@skeletonlabs/skeleton';
@@ -82,10 +82,14 @@
 			contents: '',
 			date: new Date().toISOString(),
 			category: 0,
-			colorCategory: '#ffffff'	
+			colorCategory: 0,	
 		};
 		addNote(newNote);
 		navigate(`/edit/${newNote.id}`);
+	}
+
+	function viewNote(noteId: number) {
+		navigate(`/view/${noteId}`);
 	}
 
 	function handleDelete(noteId: number) {
@@ -183,13 +187,15 @@
 							</button>
 							<ul class={noteOpened ? `mt-1 w-full` : `mt-1 w-full hidden`} id="sub-menu-2">
 								{#each $notes as note}
-								<li class="flex items-center justify-between hover:cursor-pointer">
-									<input class="input p-0 rounded-full" name="color" type="color" bind:value={note.colorCategory} />
-									<span class="line-clamp-1">{note.title}</span>
-									<div class="flex">
-										<button class="btn btn-icon rounded-full variant-filled-warning" on:click={() => navigate(`/edit/${note.id}`)}><span class="material-symbols-outlined">edit</span></button>
-										<button class="btn btn-icon rounded-full variant-filled-error" on:click={() => handleDelete(note.id)}><span class="material-symbols-outlined">delete</span></button>
-									</div>
+								<li class="flex items-center justify-between pl-2 hover:cursor-pointer">
+									<button class="p-0" on:click={() => viewNote(note.id)}>
+										<div class="w-2 h-2 rounded-full" style="background-color: {findTagById(note.colorCategory)};"></div>
+										<span class="line-clamp-1">{note.title}</span>
+										<div class="flex">
+											<button class="btn btn-icon rounded-full variant-filled-warning" on:click|stopPropagation={() => navigate(`/edit/${note.id}`)}><span class="material-symbols-outlined">edit</span></button>
+											<button class="btn btn-icon rounded-full variant-filled-error" on:click={() => handleDelete(note.id)}><span class="material-symbols-outlined">delete</span></button>
+										</div>
+									</button>
 								  </li>
 								{/each}
 								{#if $notes.length === 0}
@@ -202,20 +208,13 @@
 						</li>
 						<hr>
 						<li>
-							<div class="flex gap-2">
 								<select class="select variant-form-material my-2" name="" id="">
-									<option value="" disabled selected>Filter Category:</option>
+									<option value="" disabled selected>Filter:</option>
 									{#each $categories as cat}
 										<option value={cat.id}>{cat.name}</option>
 									{/each}
 								</select>
-								<select class="select variant-form-material my-2" name="" id="">
-									<option value="" disabled selected>Filter Tag:</option>
-									{#each $categories as cat}
-										<option value={cat.id}>{cat.name}</option>
-									{/each}
-								</select>
-							</div>
+								
 						</li>
 					  </ul>
 					</li>

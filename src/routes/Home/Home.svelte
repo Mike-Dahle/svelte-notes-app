@@ -9,7 +9,7 @@
 			contents: '',
 			date: new Date().toISOString(),
 			category: 1,
-			colorCategory: ''	
+			colorCategory: 0	
 		};
 		addNote(newNote);
 		navigate(`/edit/${newNote.id}`);
