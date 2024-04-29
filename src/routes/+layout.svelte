@@ -3,7 +3,7 @@
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import { navigate } from 'svelte-routing';
-	import { addNote, categories, notes, deleteNote, addCategory, deleteCategory, updateCategory, findTagById } from '../stores/notes';
+	import { addNote, categories, notes, deleteNote, addCategory, deleteCategory, updateCategory, findTagById, sortByDate } from '../stores/notes';
 	import { Modal, getModalStore, Toast, getToastStore } from '@skeletonlabs/skeleton';
 	import type { ModalSettings, ModalComponent, ModalStore, ToastSettings, ToastStore } from '@skeletonlabs/skeleton';
 	import { initializeStores } from '@skeletonlabs/skeleton';
@@ -14,6 +14,7 @@
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
 
+	let sortOrder: any = '';
 
 	const addCategoryModal: ModalSettings = {
 		type: 'prompt',
@@ -187,15 +188,13 @@
 							</button>
 							<ul class={noteOpened ? `mt-1 w-full` : `mt-1 w-full hidden`} id="sub-menu-2">
 								{#each $notes as note}
-								<li class="flex items-center justify-between pl-2 hover:cursor-pointer">
-									<button class="p-0" on:click={() => viewNote(note.id)}>
-										<div class="w-2 h-2 rounded-full" style="background-color: {findTagById(note.colorCategory)};"></div>
-										<span class="line-clamp-1">{note.title}</span>
+								<li class="flex w-full items-center justify-between pl-2 hover:cursor-pointer">
+										<div class="w-2 h-2 p-2 rounded-full" style="background-color: {findTagById(note.colorCategory)};"></div>
+										<button class="py-0 w-full" on:click={() => viewNote(note.id)}><span class="line-clamp-1">{note.title}</span></button>
 										<div class="flex">
 											<button class="btn btn-icon rounded-full variant-filled-warning" on:click|stopPropagation={() => navigate(`/edit/${note.id}`)}><span class="material-symbols-outlined">edit</span></button>
 											<button class="btn btn-icon rounded-full variant-filled-error" on:click={() => handleDelete(note.id)}><span class="material-symbols-outlined">delete</span></button>
 										</div>
-									</button>
 								  </li>
 								{/each}
 								{#if $notes.length === 0}
@@ -208,13 +207,19 @@
 						</li>
 						<hr>
 						<li>
+							<div class="flex gap-2">
 								<select class="select variant-form-material my-2" name="" id="">
 									<option value="" disabled selected>Filter:</option>
 									{#each $categories as cat}
 										<option value={cat.id}>{cat.name}</option>
 									{/each}
 								</select>
-								
+								<select class="select variant-form-material my-2" name="dateFilter" id="dateFilter" bind:value={sortOrder} on:select={() => sortByDate(sortOrder)}>
+									<option value="" disabled selected>Sort by:</option>
+									<option value="asc">New - Old</option>
+									<option value="desc">Old - New</option>
+								</select>
+							</div>
 						</li>
 					  </ul>
 					</li>

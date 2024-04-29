@@ -32,12 +32,10 @@
         navigate('/');
     }
 
-    function save() {
+    async function save() {
         if (note !== null) {
-            // Convert contents to Markdown before saving
-            contents = marked(contents);
+            contents = await marked(contents);
             
-            // Update the note object with the new title, contents, category, and colorCategory
             updateNote({
                 ...note,
                 title,
@@ -55,12 +53,10 @@
         tagsVisible = !tagsVisible;
     }
 
-    function handleReset() {
-        /* if (note !== null) {
-            colorCategory = '#ffffff';
-        } */
-        console.log(note);
+    const updateTag = (tagId: number) => {
+        colorCategory = tagId;
     }
+  
     $: currentTag = note !== null ? $tags.find(tag => tag.id === note?.colorCategory)?.color : '';
     $: currentCat = note !== null ? $categories.find(cat => cat.id === note?.category)?.name : '';
 </script>
@@ -86,16 +82,17 @@
                 <div id="tags" class="p-2 relative">
                     <button class="btn btn-icon btn-icon-sm variant-filled" style="background-color: {currentTag}" type="button" on:click={showTags}></button>
                         <ul class={`absolute top-15 left-0 rounded-md variant-filled-tertiary p-2 `}> <!-- ${tagsVisible ? 'block' : 'hidden'} -->
-                            
                             {#each $tags as tag}
                                 <li class="w-full flex items-center justify-center gap-4 mb-2">
                                     <input class="input" type="color" bind:value={tag.color} />
-                                    <button><span class="material-symbols-outlined hover:text-green-400">check_circle</span></button>
-                                    <button on:click|stopPropagation={() => deleteTag(tag.id)}><span class="material-symbols-outlined hover:text-red-400">delete</span></button>
+                                    <button on:click|stopPropagation={() => updateTag(tag.id)} class="btn btn-icon btn-icon-sm">
+                                        <span class="material-symbols-outlined hover:text-green-400">check_circle</span>
+                                    </button>
+                                    <button type="button" on:click|stopPropagation={() => deleteTag(tag.id)} class="btn btn-icon btn-icon-sm"><span class="material-symbols-outlined hover:text-red-400">delete</span></button>
                                 </li>
                             {/each}
                             <li class="w-full flex items-center justify-center">
-                                <button class="btn btn-icon btn-icon-sm variant-filled" type="button" on:click|stopPropagation={() => addTag}>
+                                <button class="btn btn-icon btn-icon-sm variant-filled" type="button" on:click|stopPropagation={() => addTag()}>
                                     <span class="material-symbols-outlined">add</span>
                                 </button>
                             </li>

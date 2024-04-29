@@ -1,4 +1,5 @@
 import { writable, readable, get } from 'svelte/store';
+import { navigate } from 'svelte-routing';
 
 export interface Note {
     id: number;
@@ -64,6 +65,7 @@ export function deleteNote(noteId: number) {
     notes.update(notesData => {
         return notesData.filter(note => note.id !== noteId);
     });
+    navigate('/');
 }
 
 export function findNoteById(noteId: number) {
@@ -76,10 +78,19 @@ export function findNoteById(noteId: number) {
     });
 }
 
-export function filterNotes(category: number, date: string) {
-   //filter by category or date
-
+export function filterByCategory(category: number): Note[] {
+    const notesData = get(notes);
+    return notesData.filter(note => note.category === category);
 }
+
+export function sortByDate(notes: Note[], order: 'asc' | 'desc' = 'desc'): Note[] {
+    return notes.sort((a, b) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return order === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+}
+
 
 export function addCategory(newCategory: Category) {
     categories.update(categoriesData => [...categoriesData, { ...newCategory }]);
@@ -104,7 +115,10 @@ export function deleteCategory(categoryId: number) {
 }
 
 export function addTag() {
-    tags.update(tagsData => [...tagsData, { id: tagsData.length, color: "#ffffff"}]);
+    tags.update(tagsData => {
+        const newId = tagsData.length;
+        return [...tagsData, { id: newId, color: '#ffffff' }];
+    });
 }
 
 export function updateTag(updatedTag: Tag) {
