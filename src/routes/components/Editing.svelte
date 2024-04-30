@@ -55,6 +55,7 @@
 
     const updateTag = (tagId: number) => {
         colorCategory = tagId;
+        showTags();
     }
   
     $: currentTag = note !== null ? $tags.find(tag => tag.id === note?.colorCategory)?.color : '';
@@ -85,7 +86,7 @@
                             {#each $tags as tag}
                                 <li class="w-full flex items-center justify-center gap-4 mb-2">
                                     <input class="input" type="color" bind:value={tag.color} />
-                                    <button on:click|stopPropagation={() => updateTag(tag.id)} class="btn btn-icon btn-icon-sm">
+                                    <button on:click|stopPropagation={() => updateTag(tag.id)} class="btn btn-icon btn-icon-sm" type="button">
                                         <span class="material-symbols-outlined hover:text-green-400">check_circle</span>
                                     </button>
                                     <button type="button" on:click|stopPropagation={() => deleteTag(tag.id)} class="btn btn-icon btn-icon-sm"><span class="material-symbols-outlined hover:text-red-400">delete</span></button>
