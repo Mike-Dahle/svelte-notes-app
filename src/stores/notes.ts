@@ -81,6 +81,7 @@ export function findNoteById(noteId: number) {
 export function filterByCategory(category: number): Note[] {
     const notesData = get(notes);
     return notesData.filter(note => note.category === category);
+    console.log(notesData);
 }
 
 export function sortByDate(notes: Note[], order: 'asc' | 'desc' = 'desc'): Note[] {

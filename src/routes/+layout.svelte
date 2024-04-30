@@ -3,11 +3,12 @@
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import { navigate } from 'svelte-routing';
-	import { addNote, categories, notes, deleteNote, addCategory, deleteCategory, updateCategory, findTagById, sortByDate } from '../stores/notes';
+	import { addNote, categories, notes, deleteNote, addCategory, deleteCategory, updateCategory, findTagById, sortByDate, filterByCategory } from '../stores/notes';
 	import { Modal, getModalStore, Toast, getToastStore } from '@skeletonlabs/skeleton';
 	import type { ModalSettings, ModalComponent, ModalStore, ToastSettings, ToastStore } from '@skeletonlabs/skeleton';
 	import { initializeStores } from '@skeletonlabs/skeleton';
-	import { get } from 'svelte/store';
+	import { get, writable } from 'svelte/store';
+	import type { Note } from '../stores/notes';
 
 	initializeStores();
 			
@@ -16,6 +17,8 @@
 
 	let sortOrder: any = '';
 
+	let filterState: boolean = false
+
 	const addCategoryModal: ModalSettings = {
 		type: 'prompt',
 		// Data
@@ -23,13 +26,15 @@
 		body: 'Enter the name of the category you would like to add.',
 		// Populates the input value and attributes
 		value: 'Homework',
-		valueAttr: { type: 'text', minlength: 3, maxlength: 10, required: true },
+		valueAttr: { type: 'text', minlength: 3, maxlength: 12, required: true },
 		// Returns the updated response value
 		response: (r: string) => {
-			const newCategory = {
+			if (r) {
+				const newCategory = {
 				id: get(categories).length + 1,
 				name: r,
 			};
+			console.log(r)
 			categories.update((c) => [...c, newCategory]);
 			const categoryAdded: ToastSettings = {
 				message: 'Category added successfully.',
@@ -38,7 +43,9 @@
 			};
 			toastStore.trigger(categoryAdded);
 			console.log(categories);
-		},
+			}
+		}
+			 
 	};
 
 	function handleEditCategory(catId: number) {
@@ -113,6 +120,29 @@
 		modalStore.trigger(confirmDelete);
 	}
 
+	 const selectedCategoryId = writable<number | null>(null);
+
+	let filteredNotes: any = [];
+	$: {
+		const categoryId = $selectedCategoryId;
+		filteredNotes = categoryId !== null ? filterByCategory(categoryId) : $notes;
+	}
+
+	function handleCategoryChange(event: Event) {
+		const categoryId = parseInt((event.target as HTMLSelectElement).value);
+		selectedCategoryId.set(categoryId);
+	}
+
+	function handleSortChange(event: Event) {
+		const sortOrder = (event.target as HTMLSelectElement).value;
+		sortByDate(filteredNotes, sortOrder as "desc" | "asc" | undefined);
+	}
+
+	function clearFilter() {
+        selectedCategoryId.set(null);
+    }
+
+
 </script>
 
 <Toast />
@@ -168,7 +198,7 @@
 										<button class="btn btn-icon variant-filled-warning" on:click={() => handleEditCategory(category.id)}><span class="material-symbols-outlined">edit</span></button>
 										<button class="btn btn-icon variant-filled-error" on:click={() => deleteCategory(category.id)}><span class="material-symbols-outlined">delete</span></button>
 									</div>
-								  </li>
+								</li>
 								{/each}
 								{#if $categories.length === 0}
 									<li>
@@ -187,7 +217,7 @@
 							  Notes
 							</button>
 							<ul class={noteOpened ? `mt-1 w-full` : `mt-1 w-full hidden`} id="sub-menu-2">
-								{#each $notes as note}
+								{#each filteredNotes as note}
 								<li class="flex w-full items-center justify-between pl-2 hover:cursor-pointer">
 										<div class="w-2 h-2 p-2 rounded-full" style="background-color: {findTagById(note.colorCategory)};"></div>
 										<button class="py-0 w-full" on:click={() => viewNote(note.id)}><span class="line-clamp-1">{note.title}</span></button>
@@ -208,18 +238,19 @@
 						<hr>
 						<li>
 							<div class="flex gap-2">
-								<select class="select variant-form-material my-2" name="" id="">
+								<select class="select variant-form-material my-2" name="catFilter" id="catFilter" on:change={handleCategoryChange}>
 									<option value="" disabled selected>Filter:</option>
 									{#each $categories as cat}
 										<option value={cat.id}>{cat.name}</option>
 									{/each}
 								</select>
-								<select class="select variant-form-material my-2" name="dateFilter" id="dateFilter" bind:value={sortOrder} on:select={() => sortByDate(sortOrder)}>
+								<select class="select variant-form-material my-2" name="dateFilter" id="dateFilter" on:change={handleSortChange}>
 									<option value="" disabled selected>Sort by:</option>
 									<option value="asc">New - Old</option>
 									<option value="desc">Old - New</option>
 								</select>
 							</div>
+							<button on:click={clearFilter} class="btn btn-sm font-bold w-full variant-filled">Clear Filter</button>
 						</li>
 					  </ul>
 					</li>
