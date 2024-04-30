@@ -81,7 +81,7 @@
                 Tag:
                 <div id="tags" class="p-2 relative">
                     <button class="btn btn-icon btn-icon-sm variant-filled" style="background-color: {currentTag}" type="button" on:click={showTags}></button>
-                        <ul class={`absolute top-15 left-0 rounded-md variant-filled-tertiary p-2 `}> <!-- ${tagsVisible ? 'block' : 'hidden'} -->
+                        <ul class={`absolute top-15 left-0 rounded-md variant-filled-tertiary p-2 ${tagsVisible ? 'block' : 'hidden'}`}>
                             {#each $tags as tag}
                                 <li class="w-full flex items-center justify-center gap-4 mb-2">
                                     <input class="input" type="color" bind:value={tag.color} />

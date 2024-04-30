@@ -119,6 +119,7 @@ export function addTag() {
         const newId = tagsData.length;
         return [...tagsData, { id: newId, color: '#ffffff' }];
     });
+    console.log(get(tags));
 }
 
 export function updateTag(updatedTag: Tag) {
