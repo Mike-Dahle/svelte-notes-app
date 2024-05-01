@@ -5,6 +5,14 @@
     import { marked } from 'marked';
   
     export let id: string;
+
+    function formatDate(date: string) {
+        return new Date(date).toDateString();
+    }
+
+    function formatTime(date: string) {
+        return new Date(date).toLocaleTimeString();
+    }
   
     let htmlContent = '';
 
@@ -19,6 +27,7 @@
 
 <main class="flex flex-col p-6 w-3/4 max-w-[1240px] mx-auto gap-4 mt-6">
     <h1 class="h1">{note?.title}</h1>
+    <p>Date Created: {formatDate(note?.date ?? '')} at {formatTime(note?.date ?? '')}</p>
 
     <style>
 .markdown-body {

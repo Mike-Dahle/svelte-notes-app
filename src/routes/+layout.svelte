@@ -124,8 +124,15 @@
 
 	let filteredNotes: any = [];
 	$: {
-		const categoryId = $selectedCategoryId;
-		filteredNotes = categoryId !== null ? filterByCategory(categoryId) : $notes;
+    const categoryId = $selectedCategoryId;
+    filteredNotes = categoryId !== null ? filterByCategory(categoryId) : $notes;
+    if (sortOrder) {
+        filteredNotes = sortByDate(filteredNotes, sortOrder as "desc" | "asc" | undefined);
+    }
+	}
+
+	function handleSortChange(event: Event) {
+    sortOrder = (event.target as HTMLSelectElement).value;
 	}
 
 	function handleCategoryChange(event: Event) {
@@ -133,14 +140,15 @@
 		selectedCategoryId.set(categoryId);
 	}
 
-	function handleSortChange(event: Event) {
-		const sortOrder = (event.target as HTMLSelectElement).value;
-		sortByDate(filteredNotes, sortOrder as "desc" | "asc" | undefined);
-	}
-
 	function clearFilter() {
-        selectedCategoryId.set(null);
-    }
+    selectedCategoryId.set(null);
+    sortOrder = '';
+    const catFilterSelect = document.getElementById('catFilter') as HTMLSelectElement;
+    const dateFilterSelect = document.getElementById('dateFilter') as HTMLSelectElement;
+    catFilterSelect.selectedIndex = 0;
+    dateFilterSelect.selectedIndex = 0;
+}
+
 
 
 </script>
